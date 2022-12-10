@@ -7,6 +7,8 @@ const Map = ({ coords }) => {
   const [map, setMap] = useState(null);
   const [mapsApi, setMapsApi] = useState(null);
   const [placesService, setPlacesService] = useState(null);
+  const [bathroomCoordinates, setBathroomCoordinates] = useState([]);
+
   const classes = useStyles();
   const handleApiLoaded = (map, mapsApi) => {
     setMap(map);
@@ -14,21 +16,79 @@ const Map = ({ coords }) => {
     setPlacesService(new mapsApi.places.PlacesService(map));
   };
 
-  const handleClick = () => {
-    console.log(coords);
+  async function convertAddressToLatLng(placeID) {
+    // Use the fetch API to make a request to the Geocoding API
+    // Pass the place ID as a URL parameter
+    const response = await fetch(
+      `https://maps.googleapis.com/maps/api/geocode/json?place_id=${placeID}&key=${process.env.REACT_APP_GEOCODE_API}`
+    );
+
+    // Parse the response as JSON
+    const data = await response.json();
+
+    // Extract the latitude and longitude coordinates from the response
+    const { lat, lng } = data.results[0].geometry.location;
+
+    // Return the coordinates
+    return { lat, lng };
+  }
+
+  async function callPlacesService() {
     const placesRequest = {
       location: coords,
       radius: 500,
       type: ["cafe"],
     };
 
+    //data.results[0].geometry
     placesService.textSearch(placesRequest, (response) => {
       const responseLimit = Math.min(5, response.length);
       for (let i = 0; i < responseLimit; i++) {
+        const {
+          name,
+          formatted_address: address,
+          place_id: placeID,
+        } = response[i];
+
+        console.log(name, " ", address, "", placeID);
         console.log(response[i]);
+
+        // Call the convertAddressToLatLng function and pass it the place ID
+        convertAddressToLatLng(placeID).then((newCoordinates) => {
+          // Uses spread operator to push new coords on to the state variable
+          setBathroomCoordinates((bathroomCoordinates) => [
+            ...bathroomCoordinates,
+            newCoordinates,
+          ]);
+        });
       }
     });
+  }
+  const handleClick = () => {
+    callPlacesService();
+    // const placesRequest = {
+    //   location: coords,
+    //   radius: 500,
+    //   type: ["cafe"],
+    // };
+
+    // //data.results[0].geometry
+    // placesService.textSearch(placesRequest, (response) => {
+    //   const responseLimit = Math.min(5, response.length);
+    //   for (let i = 0; i < responseLimit; i++) {
+    //     const {
+    //       name,
+    //       formatted_address: address,
+    //       place_id: placeID,
+    //     } = response[i];
+
+    //     console.log(name, " ", address, "", placeID);
+    //     console.log(response[i]);
+    //     convertAddressToLatLng(placeID);
+    //   }
+    // });
   };
+
   return (
     <div className={classes.mapContainer}>
       <GoogleMapReact
@@ -48,6 +108,11 @@ const Map = ({ coords }) => {
       <Button variant="contained" onClick={handleClick}>
         Find Bathroom
       </Button>
+      {bathroomCoordinates.map((coordinate) => (
+        <p>
+          Latitude: {coordinate.lat}, Longitude: {coordinate.lng}
+        </p>
+      ))}
     </div>
   );
 };
