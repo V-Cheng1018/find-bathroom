@@ -33,11 +33,12 @@ const Map = ({ coords }) => {
     return { lat, lng };
   }
 
-  async function callPlacesService() {
+  async function callPlacesService(placeType) {
+    //repeat api call for different type later
     const placesRequest = {
       location: coords,
       radius: 500,
-      type: ["cafe"],
+      type: placeType,
     };
 
     //data.results[0].geometry
@@ -65,7 +66,9 @@ const Map = ({ coords }) => {
     });
   }
   const handleClick = () => {
-    callPlacesService();
+    callPlacesService("cafe");
+    callPlacesService("park");
+    callPlacesService("shopping_mall");
     // const placesRequest = {
     //   location: coords,
     //   radius: 500,
@@ -103,7 +106,15 @@ const Map = ({ coords }) => {
         onGoogleApiLoaded={({ map, maps }) => handleApiLoaded(map, maps)}
         //Onload set a map placeservice object
       >
-        <LocationPin lat={coords.lat} lng={coords.lng} />
+        <LocationPin lat={coords.lat} lng={coords.lng} text={"Current"} />
+        {/* display bathroom on the map */}
+        {bathroomCoordinates.map((coordinate) => (
+          <LocationPin
+            lat={coordinate.lat}
+            lng={coordinate.lng}
+            text={"Bathroom"}
+          />
+        ))}
       </GoogleMapReact>
       <Button variant="contained" onClick={handleClick}>
         Find Bathroom
