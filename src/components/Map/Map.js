@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import GoogleMapReact from "google-map-react";
 import LocationPin from "../LocationPin/LocationPin";
+import BathroomPin from "../BathroomPin/BathroomPin";
 import useStyles from "./styles";
 import { Button } from "@material-ui/core";
 const Map = ({ coords }) => {
@@ -69,27 +70,6 @@ const Map = ({ coords }) => {
     callPlacesService("cafe");
     callPlacesService("park");
     callPlacesService("shopping_mall");
-    // const placesRequest = {
-    //   location: coords,
-    //   radius: 500,
-    //   type: ["cafe"],
-    // };
-
-    // //data.results[0].geometry
-    // placesService.textSearch(placesRequest, (response) => {
-    //   const responseLimit = Math.min(5, response.length);
-    //   for (let i = 0; i < responseLimit; i++) {
-    //     const {
-    //       name,
-    //       formatted_address: address,
-    //       place_id: placeID,
-    //     } = response[i];
-
-    //     console.log(name, " ", address, "", placeID);
-    //     console.log(response[i]);
-    //     convertAddressToLatLng(placeID);
-    //   }
-    // });
   };
 
   return (
@@ -109,11 +89,7 @@ const Map = ({ coords }) => {
         <LocationPin lat={coords.lat} lng={coords.lng} text={"Current"} />
         {/* display bathroom on the map */}
         {bathroomCoordinates.map((coordinate) => (
-          <LocationPin
-            lat={coordinate.lat}
-            lng={coordinate.lng}
-            text={"Bathroom"}
-          />
+          <BathroomPin lat={coordinate.lat} lng={coordinate.lng} />
         ))}
       </GoogleMapReact>
       <Button variant="contained" onClick={handleClick}>

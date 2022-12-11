@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import Header from "./components/Header/Header";
 import Map from "./components/Map/Map";
 import GetLocationButton from "./components/GetLocation/GetLocationButton";
-import NearestBathroom from "./components/NearestBathroom/NearestBathroom";
 import { CssBaseline, Grid, Button } from "@material-ui/core";
 const App = () => {
   const [coords, setCoords] = useState({});
